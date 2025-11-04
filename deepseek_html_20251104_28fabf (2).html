@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поиграем?</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 90%;
+            margin: 40px auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .page {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px 0;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #e91e63;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #e91e63;
+            margin: 20px 0;
+            font-size: 1.8em;
+        }
+
+        h3 {
+            color: #e91e63;
+            margin: 15px 0;
+            font-size: 1.4em;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin: 20px 0;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #e91e63, #ff4081);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 15px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 5px 15px rgba(233, 30, 99, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(233, 30, 99, 0.4);
+        }
+
+        .btn-next {
+            background: linear-gradient(45deg, #9C27B0, #E91E63);
+            margin-top: 30px;
+            animation: pulse-btn 2s infinite;
+        }
+
+        .btn-hidden {
+            background: transparent;
+            color: #9C27B0;
+            border: 2px dashed #9C27B0;
+            padding: 10px 20px;
+            margin: 10px;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+
+        .btn-hidden:hover {
+            opacity: 1;
+            background: rgba(156, 39, 176, 0.1);
+        }
+
+        @keyframes pulse-btn {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .instructions {
+            background: #f8f9ff;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 4px solid #e91e63;
+        }
+
+        /* Область с сердечками */
+        .hearts-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            margin: 30px 0;
+            border: 3px dashed #e91e63;
+            border-radius: 15px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Стили для сердечек */
+        .heart {
+            position: absolute;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            user-select: none;
+        }
+
+        .heart:hover {
+            transform: scale(1.1);
+        }
+
+        .good-heart {
+            color: #e91e63;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        .bad-heart {
+            color: #9e9e9e;
+            animation: shake 2s infinite ease-in-out;
+        }
+
+        .broken-heart {
+            color: #757575;
+            animation: broken 4s infinite ease-in-out;
+        }
+
+        .dark-heart {
+            color: #424242;
+            animation: pulse-dark 3s infinite ease-in-out;
+        }
+
+        /* Анимации для сердечек */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes broken {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(0.9) rotate(10deg); }
+        }
+
+        @keyframes pulse-dark {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        /* Счетчик */
+        .counter {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #e91e63;
+            margin: 20px 0;
+        }
+
+        /* Модальные окна для результатов */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: modal-appear 0.5s ease-out;
+            position: relative;
+        }
+
+        @keyframes modal-appear {
+            0% { transform: scale(0.7); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #e91e63;
+        }
+
+        .modal h2 {
+            color: #e91e63;
+            margin-bottom: 20px;
+        }
+
+        .modal p {
+            margin: 15px 0;
+        }
+
+        /* Фон с сердечками */
+        .background-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .bg-heart {
+            position: absolute;
+            color: rgba(233, 30, 99, 0.1);
+            font-size: 24px;
+            animation: bg-float 20s infinite linear;
+        }
+
+        @keyframes bg-float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Страница с календарной загадкой */
+        .calendar-page {
+            display: none;
+        }
+
+        .calendar-riddle {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 4px solid #9C27B0;
+        }
+
+        .calendar-riddle h3 {
+            color: #9C27B0;
+        }
+
+        .calculation {
+            font-family: 'Courier New', monospace;
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .answer-input {
+            width: 200px;
+            padding: 12px 20px;
+            font-size: 1.2em;
+            border: 2px solid #9C27B0;
+            border-radius: 10px;
+            margin: 15px;
+            text-align: center;
+        }
+
+        /* Страница с кодом доступа */
+        .password-page {
+            display: none;
+        }
+
+        .password-container {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 4px solid #FF9800;
+        }
+
+        .password-container h3 {
+            color: #FF9800;
+        }
+
+        /* Игра "Угадай эмоцию" */
+        .emotion-game-page {
+            display: none;
+        }
+
+        .emotion-game {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 4px solid #2196F3;
+        }
+
+        .emotion-game h3 {
+            color: #2196F3;
+        }
+
+        .situation {
+            font-size: 1.3em;
+            margin: 25px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .emotion-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .emotion-btn {
+            background: white;
+            border: 2px solid #2196F3;
+            color: #2196F3;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+        }
+
+        .emotion-btn:hover {
+            background: #2196F3;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .emotion-btn.correct {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+        }
+
+        .emotion-btn.incorrect {
+            background: #f44336;
+            border-color: #f44336;
+            color: white;
+        }
+
+        .game-progress {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .progress-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            background: #2196F3;
+            transform: scale(1.2);
+        }
+
+        .progress-dot.correct {
+            background: #4CAF50;
+        }
+
+        /* Игра "Наши секреты" */
+        .secrets-game-page {
+            display: none;
+        }
+
+        .secrets-game {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 4px solid #FF5722;
+        }
+
+        .secrets-game h3 {
+            color: #FF5722;
+        }
+
+        .secrets-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .secrets-btn {
+            background: white;
+            border: 2px solid #FF5722;
+            color: #FF5722;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+        }
+
+        .secrets-btn:hover {
+            background: #FF5722;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        .secrets-btn.correct {
+            background: #4CAF50;
+            border-color: #4CAF50;
+            color: white;
+        }
+
+        .secrets-btn.incorrect {
+            background: #f44336;
+            border-color: #f44336;
+            color: white;
+        }
+
+        /* Игра "Выбери правильный путь" */
+        .maze-game-page {
+            display: none;
+        }
+
+        .maze-game {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 4px solid #673AB7;
+        }
+
+        .maze-game h3 {
+            color: #673AB7;
+        }
+
+        .doors-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .door {
+            background: linear-gradient(135deg, #673AB7, #9575CD);
+            color: white;
+            padding: 40px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.3em;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(103, 58, 183, 0.3);
+        }
+
+        .door:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 25px rgba(103, 58, 183, 0.4);
+        }
+
+        .door.correct {
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            animation: pulse 1s infinite;
+        }
+
+        .door.incorrect {
+            background: linear-gradient(135deg, #f44336, #EF5350);
+        }
+
+        .heart-timer-page {
+            display: none;
+        }
+
+        .heart-timer {
+            text-align: center;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 30px 0;
+            background: linear-gradient(135deg, #e91e63, #ff4081);
+            color: white;
+        }
+
+        .heart-beat {
+            font-size: 6em;
+            margin: 20px 0;
+            animation: heartbeat 1.5s infinite;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .timer {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .love-messages {
+            min-height: 100px;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .love-message {
+            font-size: 1.3em;
+            margin: 15px 0;
+            opacity: 0;
+            animation: fadeInOut 3s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Финальная страница с подарком */
+        .final-page {
+            display: none;
+        }
+
+        .couple-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 30px;
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .person {
+            text-align: center;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        .boy {
+            animation-delay: 0.5s;
+        }
+
+        .girl {
+            animation-delay: 1s;
+        }
+
+        .person-emoji {
+            font-size: 8em;
+            margin-bottom: 20px;
+        }
+
+        .gift-emoji {
+            font-size: 4em;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -60%) scale(1.1); }
+        }
+
+        .birthday-message {
+            background: linear-gradient(135deg, #e91e63, #ff4081);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 30px 0;
+            font-size: 1.5em;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        .floating-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 2em;
+            animation: float-around 8s infinite linear;
+        }
+
+        @keyframes float-around {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(100px, -100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Адаптивность */
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                margin: 20px auto;
+            }
+            
+            .page {
+                padding: 25px 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .hearts-container {
+                height: 300px;
+            }
+            
+            .calculation {
+                font-size: 1.1em;
+                padding: 15px;
+            }
+            
+            .heart-beat {
+                font-size: 4em;
+            }
+            
+            .timer {
+                font-size: 2.5em;
+            }
+            
+            .emotion-options,
+            .secrets-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .doors-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .door {
+                padding: 30px 15px;
+            }
+            
+            .modal-content {
+                padding: 30px 20px;
+            }
+            
+            .couple-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .person-emoji {
+                font-size: 6em;
+            }
+            
+            .gift-emoji {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Фон с сердечками -->
+    <div class="background-hearts" id="backgroundHearts"></div>
+
+    <!-- Модальные окна для результатов -->
+    <div class="modal" id="heartsModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('heartsModal')">&times;</span>
+            <h2>Поздравляю! Ты убрал все плохие сердечки! 💖</h2>
+            <p>Пускай все плохое также исчезает одним лишь нажатием.</p>
+            <div style="font-size: 3em; margin: 20px 0;">💕✨🎉</div>
+            <p>Идём дальше?:></p>
+            <button class="btn btn-next" onclick="closeModal('heartsModal'); showCalendarPage()">Нажми :)</button>
+        </div>
+    </div>
+
+    <div class="modal" id="calendarModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('calendarModal')">&times;</span>
+            <h2>Правильно, любимка! 🎉</h2>
+            <p>Ты отлично справился с загадкой!</p>
+            <div style="font-size: 3em; margin: 20px 0;">🔍✨</div>
+            <h3>Следующая подсказка:</h3>
+            <p>Посмотри внимательно на число... 15 может быть паролем!</p>
+            
+            <!-- Скрытая кнопка -->
+            <div style="margin-top: 30px; opacity: 0.7; transition: opacity 0.3s ease;">
+                <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">что это за кнопка?...</p>
+                <button class="btn btn-hidden" onclick="closeModal('calendarModal'); showPasswordPage()">
+                    <i></i> &nbsp;
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="emotionModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('emotionModal')">&times;</span>
+            <h2>Ты меня знаешь лучше всех! 💖</h2>
+            <p>Ты правильно угадал все мои эмоции! Это значит, что ты действительно понимаешь меня.</p>
+            <div style="font-size: 3em; margin: 20px 0;">🤗💫✨</div>
+            <p>А теперь проверим еще кое-что...</p>
+            <button class="btn btn-next" onclick="closeModal('emotionModal'); showSecretsGamePage()">
+                <i class="fas fa-heart"></i> Наши секреты
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="secretsModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('secretsModal')">&times;</span>
+            <h2>Идеально! Ты помнишь всё! 💫</h2>
+            <p>Ты знаешь все наши моменты и фразы!</p>
+            <div style="font-size: 3em; margin: 20px 0;">💕🔐💖</div>
+            <p>Теперь выбери правильный путь к следующей подсказке...</p>
+            <button class="btn btn-next" onclick="closeModal('secretsModal'); showMazeGamePage()">
+                <i class="fas fa-map-signs"></i> Выбрать путь
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="mazeModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('mazeModal')">&times;</span>
+            <h2>Правильный выбор! 🎉</h2>
+            <p>Ты нашел дверь к своему подарку:)</p>
+            <div style="font-size: 3em; margin: 20px 0;">🔑✨💖</div>
+            <p>Приготовься, подарок будет очень скоро...</p>
+            <button class="btn btn-next" onclick="closeModal('mazeModal'); showHeartTimerPage()">
+                <i class="fas fa-heartbeat"></i> Финальный шаг
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="timerModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeFinalModal()">&times;</span>
+            <h2>Время! 🎉</h2>
+            <p>Ты терпеливо ждал, и это того стоило!</p>
+            <div style="font-size: 3em; margin: 20px 0;">✨💌✨</div>
+            <h3>Финал:</h3>
+            <p>А теперь зайди в наш чат телеграмма) 💝</p>
+            <p><em>P.S. Я так сильно тебя люблю! Спасибо, что прошел весь этот квест и уделил этому время, я надеюсь тебе понравилось 💕</em></p>
+        </div>
+    </div>
+
+    <!-- Главная страница с сердечками -->
+    <div class="container">
+        <div class="page" id="mainPage">
+            <h1>Ты умничка! ❤️</h1>
+            
+            <div class="instructions">
+                <p>Эта страничка вся в сердечках, которые дарят тебе всю мою любовь.</p>
+                <p>Но мне кажется, что некоторые из них какие-то странные...</p>
+                <p><strong>Может, убрать их?</strong></p>
+            </div>
+
+            <div class="counter">
+                Осталось плохих сердечек: <span id="badHeartsCount">15</span>
+            </div>
+
+            <div class="hearts-container" id="heartsContainer">
+                <!-- Сюда добавляются сердечки через JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Страница с календарной загадкой -->
+    <div class="container calendar-page" id="calendarPage">
+        <div class="page">
+            <h1>Календарная загадка 📅</h1>
+            
+            <div class="calendar-riddle">
+                <h3>«Это был вторник. Это был февраль. Это был день, когда всё изменилось.»</h3>
+                
+                <div class="calculation">
+                    0 + 4 + 0 + 2 + 2 + 0 + 2 + 5 = ?
+                </div>
+                
+                <p>Введи ответ (число):</p>
+                <input type="number" class="answer-input" id="calendarAnswer" min="1" max="31">
+                <br>
+                <button class="btn" onclick="checkCalendarAnswer()">Проверить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Страница с кодом доступа -->
+    <div class="container password-page" id="passwordPage">
+        <div class="page">
+            <h1>Код доступа 🔐</h1>
+            
+            <div class="password-container">
+                <h3>«Кстати, я тебя люблю)»</h3>
+                
+                <p>Введи код доступа:</p>
+                <input type="number" class="answer-input" id="passwordInput" min="1" max="99">
+                <br>
+                <button class="btn" onclick="checkPassword()">Открыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Игра "Угадай эмоцию" -->
+    <div class="container emotion-game-page" id="emotionGamePage">
+        <div class="page">
+            <h1>Угадай эмоцию 💭</h1>
+            
+            <div class="emotion-game">
+                <h3>Попробуй угадать, что я чувствовала в этих ситуациях...</h3>
+                
+                <div class="game-progress" id="emotionProgress">
+                    <div class="progress-dot" id="emotionProgress1"></div>
+                    <div class="progress-dot" id="emotionProgress2"></div>
+                    <div class="progress-dot" id="emotionProgress3"></div>
+                </div>
+                
+                <div class="situation" id="emotionSituationText">
+                    <!-- Ситуация будет загружена через JavaScript -->
+                </div>
+                
+                <div class="emotion-options" id="emotionOptions">
+                    <!-- Варианты ответов будут загружены через JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Игра "Наши моменты" -->
+    <div class="container secrets-game-page" id="secretsGamePage">
+        <div class="page">
+            <h1>Наши моменты</h1>
+            
+            <div class="secrets-game">
+                <h3>Проверим, насколько хорошо ты помнишь наши особенные моменты:></h3>
+                
+                <div class="game-progress" id="secretsProgress">
+                    <div class="progress-dot" id="secretsProgress1"></div>
+                    <div class="progress-dot" id="secretsProgress2"></div>
+                    <div class="progress-dot" id="secretsProgress3"></div>
+                </div>
+                
+                <div class="situation" id="secretsSituationText">
+                    <!-- Вопрос будет загружен через JavaScript -->
+                </div>
+                
+                <div class="secrets-options" id="secretsOptions">
+                    <!-- Варианты ответов будут загружены через JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Игра "Выбери правильный путь" -->
+    <div class="container maze-game-page" id="mazeGamePage">
+        <div class="page">
+            <h1>Выбери правильный путь 🚪</h1>
+            
+            <div class="maze-game">
+                <h3>Перед тобой три двери. Только одна ведёт к следующей подсказке...</h3>
+                
+                <div class="doors-container">
+                    <div class="door" onclick="checkDoor(1)">
+                        🚪 Дверь к подарку
+                    </div>
+                    <div class="door" onclick="checkDoor(2)">
+                        🚪 Дверь ко сну
+                    </div>
+                    <div class="door" onclick="checkDoor(3)">
+                        🚪 Дверь к еде
+                    </div>
+                </div>
+                
+                <p>Хмм...какая же дверь правильная?)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Страница с сердечным таймером -->
+    <div class="container heart-timer-page" id="heartTimerPage">
+        <div class="page">
+            <h1>Сердечный таймер 💖</h1>
+            
+            <div class="heart-timer">
+                <div class="heart-beat">💗</div>
+                <div class="timer" id="timer">20</div>
+                <p>Осталось несколько секунд...</p>
+                
+                <div class="love-messages" id="loveMessages">
+                    <!-- Сообщения будут появляться здесь -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Финальная страница с подарком -->
+    <div class="container final-page" id="finalPage">
+        <div class="page">
+            <h1>С Днём Рождения! 🎂</h1>
+            
+            <div class="couple-container">
+                <div class="person boy">
+                    <div class="person-emoji">👦</div>
+                    <p>Ты</p>
+                </div>
+                
+                <div class="person girl">
+                    <div class="person-emoji">👧</div>
+                    <p>Я</p>
+                </div>
+                
+                <div class="gift-emoji">🎁</div>
+            </div>
+            
+            <div class="birthday-message">
+                💝 С Днем Рождения, мой любимый! 💝
+            </div>
+            
+            <div class="instructions">
+                <p>Этот маленький квест я создала специально для тебя.</p>
+                <p>Хочу пожелать тебе всего самого наилучшего в этот особенный день.</p>
+                <p>Пусть все твои мечты сбываются, а каждый день приносит радость и счастье!</p>
+                <p>Ты самый замечательный человек на свете, и я бесконечно рада, что ты есть в моей жизни! 💖</p>
+<p>Мой любимый, я всегда рядом.</p>
+<p>Люблю тебя:)</p>
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <button class="btn btn-next" onclick="location.reload()">
+                    <i class="fas fa-redo"></i> Начать заново
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Данные для игры "Угадай эмоцию"
+        const emotionGameData = [
+            {
+                situation: "Когда ты впервые прислал мне голосовое сообщение...",
+                options: [
+                    { text: "Волнение и радость", correct: true },
+                    { text: "Страх и тревога", correct: false },
+                    { text: "Равнодушие", correct: false },
+                    { text: "Раздражение", correct: false }
+                ]
+            },
+            {
+                situation: "Когда мы впервые созвонились и спали вместе до утра...",
+                options: [
+                    { text: "Счастье и спокойствие", correct: true },
+                    { text: "Скука", correct: false },
+                    { text: "Грусть", correct: false },
+                    { text: "Нервозность", correct: false }
+                ]
+            },
+            {
+                situation: "Когда ты сказал, что хочешь приехать ко мне...",
+                options: [
+                    { text: "ДУРОЧКА ПРИЕДЬ СКОРЕЕ", correct: true },
+                    { text: "Испуг", correct: false },
+                    { text: "Безразличие", correct: false },
+                    { text: "Сомнение", correct: false }
+                ]
+            }
+        ];
+
+        // Данные для игры "Наши секреты"
+        const secretsGameData = [
+            {
+                situation: "Где мы начали наше полноценное общение?",
+                options: [
+                    { text: "Инстаграм", correct: true },
+                    { text: "Телеграм", correct: false },
+                    { text: "ВКонтакте", correct: false },
+                    { text: "WhatsApp", correct: false }
+                ]
+            },
+            {
+                situation: "Ты любишь меня?",
+                options: [
+                    { text: "Я тебя бубу", correct: true },
+                    { text: "Да", correct: false },
+                    { text: "Конечно", correct: false },
+                    { text: "Очень", correct: false }
+                ]
+            },
+            {
+                situation: "Что я думаю о расстоянии между нами?",
+                options: [
+                    { text: "Наша любовь сильнее расстояния", correct: true },
+                    { text: "Мы не сможем пройти через это", correct: false },
+                    { text: "Меня это не волнует", correct: false },
+                    { text: "Это делает нашу любовь менее ценной", correct: false }
+                ]
+            }
+        ];
+
+        let currentEmotionQuestion = 0;
+        let currentSecretsQuestion = 0;
+        let correctEmotionAnswers = 0;
+        let correctSecretsAnswers = 0;
+
+        // Функции для работы с модальными окнами
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function closeFinalModal() {
+            closeModal('timerModal');
+            showFinalPage();
+        }
+
+        function showFinalPage() {
+            // Скрываем все страницы
+            document.querySelectorAll('.container').forEach(container => {
+                container.style.display = 'none';
+            });
+            
+            // Показываем финальную страницу
+            document.getElementById('finalPage').style.display = 'block';
+            
+            // Создаем плавающие сердечки
+            createFloatingHearts();
+        }
+
+        function createFloatingHearts() {
+            const container = document.querySelector('.final-page .page');
+            const floatingHearts = document.createElement('div');
+            floatingHearts.className = 'floating-hearts';
+            
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'floating-heart';
+                heart.innerHTML = '💖';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.top = Math.random() * 100 + '%';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                floatingHearts.appendChild(heart);
+            }
+            
+            container.appendChild(floatingHearts);
+        }
+
+        // Создаем фон с сердечками
+        function createBackgroundHearts() {
+            const container = document.getElementById('backgroundHearts');
+            const heartCount = 30;
+            
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'bg-heart';
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDelay = Math.random() * 20 + 's';
+                heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                container.appendChild(heart);
+            }
+        }
+
+        // Создаем игровые сердечки
+        function createGameHearts() {
+            const container = document.getElementById('heartsContainer');
+            const totalHearts = 25;
+            const badHeartsCount = 15;
+            let badHeartsRemaining = badHeartsCount;
+            
+            // Обновляем счетчик
+            document.getElementById('badHeartsCount').textContent = badHeartsRemaining;
+            
+            // Очищаем контейнер
+            container.innerHTML = '';
+            
+            // Создаем хорошие сердечки
+            for (let i = 0; i < totalHearts - badHeartsCount; i++) {
+                createHeart(container, 'good');
+            }
+            
+            // Создаем плохие сердечки
+            const badHeartTypes = ['bad', 'broken', 'dark'];
+            for (let i = 0; i < badHeartsCount; i++) {
+                const type = badHeartTypes[Math.floor(Math.random() * badHeartTypes.length)];
+                createHeart(container, type);
+            }
+            
+            // Функция создания сердечка
+            function createHeart(container, type) {
+                const heart = document.createElement('div');
+                heart.className = `heart ${type}-heart`;
+                
+                // Выбираем символ в зависимости от типа
+                let symbol;
+                switch(type) {
+                    case 'good':
+                        symbol = '❤️';
+                        break;
+                    case 'bad':
+                        symbol = '💔';
+                        break;
+                    case 'broken':
+                        symbol = '🖤';
+                        break;
+                    case 'dark':
+                        symbol = '💀';
+                        break;
+                }
+                
+                heart.innerHTML = symbol;
+                heart.style.fontSize = (Math.random() * 30 + 25) + 'px';
+                heart.style.left = Math.random() * 85 + '%';
+                heart.style.top = Math.random() * 85 + '%';
+                
+                // Добавляем обработчик клика
+                heart.addEventListener('click', function() {
+                    if (type !== 'good') {
+                        // Удаляем плохое сердечко
+                        this.style.transform = 'scale(0)';
+                        this.style.opacity = '0';
+                        
+                        setTimeout(() => {
+                            container.removeChild(this);
+                            badHeartsRemaining--;
+                            document.getElementById('badHeartsCount').textContent = badHeartsRemaining;
+                            
+                            // Проверяем, все ли плохие сердечки убраны
+                            if (badHeartsRemaining === 0) {
+                                showModal('heartsModal');
+                                
+                                // Добавляем праздничные сердечки
+                                for (let i = 0; i < 20; i++) {
+                                    const celebrationHeart = document.createElement('div');
+                                    celebrationHeart.className = 'heart good-heart';
+                                    celebrationHeart.innerHTML = '💖';
+                                    celebrationHeart.style.fontSize = (Math.random() * 30 + 25) + 'px';
+                                    celebrationHeart.style.left = Math.random() * 85 + '%';
+                                    celebrationHeart.style.top = Math.random() * 85 + '%';
+                                    celebrationHeart.style.animation = 'float 2s infinite ease-in-out';
+                                    container.appendChild(celebrationHeart);
+                                }
+                            }
+                        }, 300);
+                    } else {
+                        // Анимация для хорошего сердечка
+                        this.style.transform = 'scale(1.3)';
+                        setTimeout(() => {
+                            this.style.transform = 'scale(1)';
+                        }, 200);
+                    }
+                });
+                
+                container.appendChild(heart);
+            }
+        }
+
+        // Функции для навигации между страницами
+        function showCalendarPage() {
+            document.getElementById('mainPage').style.display = 'none';
+            document.getElementById('calendarPage').style.display = 'block';
+        }
+
+        function showPasswordPage() {
+            document.getElementById('calendarPage').style.display = 'none';
+            document.getElementById('passwordPage').style.display = 'block';
+        }
+
+        function showEmotionGamePage() {
+            document.getElementById('passwordPage').style.display = 'none';
+            document.getElementById('emotionGamePage').style.display = 'block';
+            loadEmotionQuestion(0);
+        }
+
+        function showSecretsGamePage() {
+            document.getElementById('emotionGamePage').style.display = 'none';
+            document.getElementById('secretsGamePage').style.display = 'block';
+            loadSecretsQuestion(0);
+        }
+
+        function showMazeGamePage() {
+            document.getElementById('secretsGamePage').style.display = 'none';
+            document.getElementById('mazeGamePage').style.display = 'block';
+        }
+
+        function showHeartTimerPage() {
+            document.getElementById('mazeGamePage').style.display = 'none';
+            document.getElementById('heartTimerPage').style.display = 'block';
+            startHeartTimer();
+        }
+
+        // Функции для игр
+        function checkCalendarAnswer() {
+            const answer = document.getElementById('calendarAnswer').value;
+            if (answer === '15') {
+                showModal('calendarModal');
+            } else {
+                alert('Попробуй еще раз! Подсказка: сложи все цифры из даты.');
+            }
+        }
+
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === '15') {
+                showEmotionGamePage();
+            } else {
+                alert('Неверный код! Попробуй еще раз.');
+            }
+        }
+
+        function loadEmotionQuestion(index) {
+            if (index >= emotionGameData.length) {
+                return;
+            }
+            
+            currentEmotionQuestion = index;
+            const question = emotionGameData[index];
+            
+            document.getElementById('emotionSituationText').textContent = question.situation;
+            
+            const optionsContainer = document.getElementById('emotionOptions');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, i) => {
+                const button = document.createElement('button');
+                button.className = 'emotion-btn';
+                button.textContent = option.text;
+                button.onclick = () => checkEmotionAnswer(option.correct, button);
+                optionsContainer.appendChild(button);
+            });
+            
+            // Обновляем прогресс
+            updateEmotionProgress();
+        }
+
+        function checkEmotionAnswer(isCorrect, button) {
+            if (isCorrect) {
+                button.classList.add('correct');
+                correctEmotionAnswers++;
+            } else {
+                button.classList.add('incorrect');
+            }
+            
+            // Отключаем все кнопки
+            const buttons = document.querySelectorAll('.emotion-btn');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+            });
+            
+            setTimeout(() => {
+                if (currentEmotionQuestion < emotionGameData.length - 1) {
+                    loadEmotionQuestion(currentEmotionQuestion + 1);
+                } else {
+                    if (correctEmotionAnswers === emotionGameData.length) {
+                        showModal('emotionModal');
+                    } else {
+                        alert(`Ты угадал ${correctEmotionAnswers} из ${emotionGameData.length} эмоций! Попробуй еще раз?`);
+                        currentEmotionQuestion = 0;
+                        correctEmotionAnswers = 0;
+                        loadEmotionQuestion(0);
+                    }
+                }
+            }, 1500);
+        }
+
+        function updateEmotionProgress() {
+            for (let i = 1; i <= 3; i++) {
+                const dot = document.getElementById(`emotionProgress${i}`);
+                if (i - 1 < currentEmotionQuestion) {
+                    dot.classList.add('correct');
+                    dot.classList.remove('active');
+                } else if (i - 1 === currentEmotionQuestion) {
+                    dot.classList.add('active');
+                    dot.classList.remove('correct');
+                } else {
+                    dot.classList.remove('active', 'correct');
+                }
+            }
+        }
+
+        function loadSecretsQuestion(index) {
+            if (index >= secretsGameData.length) {
+                return;
+            }
+            
+            currentSecretsQuestion = index;
+            const question = secretsGameData[index];
+            
+            document.getElementById('secretsSituationText').textContent = question.situation;
+            
+            const optionsContainer = document.getElementById('secretsOptions');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, i) => {
+                const button = document.createElement('button');
+                button.className = 'secrets-btn';
+                button.textContent = option.text;
+                button.onclick = () => checkSecretsAnswer(option.correct, button);
+                optionsContainer.appendChild(button);
+            });
+            
+            // Обновляем прогресс
+            updateSecretsProgress();
+        }
+
+        function checkSecretsAnswer(isCorrect, button) {
+            if (isCorrect) {
+                button.classList.add('correct');
+                correctSecretsAnswers++;
+            } else {
+                button.classList.add('incorrect');
+            }
+            
+            // Отключаем все кнопки
+            const buttons = document.querySelectorAll('.secrets-btn');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+            });
+            
+            setTimeout(() => {
+                if (currentSecretsQuestion < secretsGameData.length - 1) {
+                    loadSecretsQuestion(currentSecretsQuestion + 1);
+                } else {
+                    if (correctSecretsAnswers === secretsGameData.length) {
+                        showModal('secretsModal');
+                    } else {
+                        alert(`Ты ответил правильно на ${correctSecretsAnswers} из ${secretsGameData.length} вопросов! Все хорошо солнышко, попробуй еще раз:)`);
+                        currentSecretsQuestion = 0;
+                        correctSecretsAnswers = 0;
+                        loadSecretsQuestion(0);
+                    }
+                }
+            }, 1500);
+        }
+
+        function updateSecretsProgress() {
+            for (let i = 1; i <= 3; i++) {
+                const dot = document.getElementById(`secretsProgress${i}`);
+                if (i - 1 < currentSecretsQuestion) {
+                    dot.classList.add('correct');
+                    dot.classList.remove('active');
+                } else if (i - 1 === currentSecretsQuestion) {
+                    dot.classList.add('active');
+                    dot.classList.remove('correct');
+                } else {
+                    dot.classList.remove('active', 'correct');
+                }
+            }
+        }
+
+        function checkDoor(doorNumber) {
+            const doors = document.querySelectorAll('.door');
+            
+            if (doorNumber === 1) {
+                // Правильная дверь
+                doors[0].classList.add('correct');
+                setTimeout(() => {
+                    showModal('mazeModal');
+                }, 1000);
+            } else {
+                // Неправильная дверь
+                doors[doorNumber - 1].classList.add('incorrect');
+                setTimeout(() => {
+                    alert('Не та дверь! Попробуй еще раз.');
+                    doors[doorNumber - 1].classList.remove('incorrect');
+                }, 1000);
+            }
+        }
+
+        function startHeartTimer() {
+            let timeLeft = 20;
+            const timerElement = document.getElementById('timer');
+            const messagesContainer = document.getElementById('loveMessages');
+            
+            const messages = [
+                "Ты самый лучший! 💕",
+                "Я так сильно тебя люблю! 💖",
+                "Ты делаешь меня счастливой! ✨",
+                "Спасибо, что ты есть! 💫",
+                "Ты мое солнышко! 🌟",
+                "Я скучаю по тебе! 💌",
+                "Ты мой самый любимый человек! 💘",
+                "С тобой так спокойно! 💞",
+                "Ты мое вдохновение! 💗",
+                "Люблю тебя больше всего на свете! 💓"
+            ];
+            
+            const timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                
+                // Показываем случайное сообщение каждые 2 секунды
+                if (timeLeft % 2 === 0 && timeLeft > 0) {
+                    const message = document.createElement('div');
+                    message.className = 'love-message';
+                    message.textContent = messages[Math.floor(Math.random() * messages.length)];
+                    messagesContainer.appendChild(message);
+                    
+                    // Удаляем сообщение после анимации
+                    setTimeout(() => {
+                        if (message.parentNode) {
+                            message.parentNode.removeChild(message);
+                        }
+                    }, 3000);
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    showModal('timerModal');
+                }
+            }, 1000);
+        }
+
+        // Инициализация при загрузке страницы
+        window.onload = function() {
+            createBackgroundHearts();
+            createGameHearts();
+        };
+    </script>
+</body>
+</html>
